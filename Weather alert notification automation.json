@@ -1,0 +1,158 @@
+{
+  "name": "Weather alert notification automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 15,
+              "triggerAtMinute": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -320,
+        48
+      ],
+      "id": "3d211814-7b2e-46c0-a8ee-8396e22cc6e5",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "cityName": "Chennai",
+        "language": "english"
+      },
+      "type": "n8n-nodes-base.openWeatherMap",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        48
+      ],
+      "id": "eef40f41-a430-428f-9673-1a5b89f46329",
+      "name": "OpenWeatherMap",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "ZlqDBIDtNDn00syn",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "50fbb499-4424-437f-a1b9-d5f3b779b56c",
+              "leftValue": "={{ $json.weather[0].main}}",
+              "rightValue": "Rain",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        112,
+        48
+      ],
+      "id": "69245f6a-ca2e-4e41-987c-eecddf6a6695",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "rahulmano895@gmail.com",
+        "subject": "N8N automation test",
+        "message": "<h2>Hello!</h2> <p>This is my first automated email sent using n8n.</p> <p>My workflow is working successfully! 🚀</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        32
+      ],
+      "id": "a70bbc78-3a28-45fb-8623-ffb14dc51b5f",
+      "name": "Send a message",
+      "webhookId": "6672aeeb-52ef-4bfa-87ff-012f3887a6c0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "qg2BdiI2EvwD4u8s",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "OpenWeatherMap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenWeatherMap": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "193edd87-6fe5-409f-a0cd-6c9cae34088e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5bc00bb52e5f974cc256d29a4c7adb15cbca593050efd952d642a155d28d68fa"
+  },
+  "nodeGroups": [],
+  "id": "jydsVJsBIdjIplgd",
+  "tags": []
+}

@@ -1,0 +1,147 @@
+{
+  "name": "RSS feed workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -560,
+        -64
+      ],
+      "id": "8ca1ee22-d3dc-4454-b2d5-f1dd4669a3ea",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        -64
+      ],
+      "id": "d2d8f9ba-7632-4176-9033-36fb329f14e3",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "maxItems": 3
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        -160
+      ],
+      "id": "a7755d2d-0b83-4da5-85ec-0294cd69a682",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nlet emailHtml = `\n<h2>📰 Today's Top News Headlines</h2>\n<p>Here are the latest articles from the RSS feed:</p>\n<ol>\n`;\n\nlet telegramText = `📰 TODAY'S TOP NEWS HEADLINES\\n\\n`;\n\nitems.forEach((item, index) => {\n  const title = item.json.title || 'No title available';\n  const link = item.json.link || '';\n  const description =\n    item.json.contentSnippet ||\n    item.json.description ||\n    'No description available';\n\n  emailHtml += `\n<li>\n<strong>${title}</strong><br>\n${description}<br>\n<a href=\"${link}\">🔗 Read Full Article</a>\n</li>\n<br>\n`;\n\n  telegramText += `${index + 1}. ${title}\\n`;\n  telegramText += `📝 ${description}\\n`;\n  telegramText += `🔗 ${link}\\n\\n`;\n});\n\nemailHtml += `\n</ol>\n<p>🤖 Automated by n8n</p>\n`;\n\ntelegramText += `🤖 Automated by n8n`;\n\nreturn [\n  {\n    json: {\n      emailHtml,\n      telegramText\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        112,
+        -64
+      ],
+      "id": "a3ed042b-1f9e-4ca0-8a8b-4c953988619e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "rahulmano895@gmail.com",
+        "subject": "Daily Top 3 News Headlines",
+        "message": "={{ $json.emailBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        -208
+      ],
+      "id": "9fd5b6f4-0305-4da0-90c7-54a9e1a7034a",
+      "name": "Send a message",
+      "webhookId": "7bd4e0b5-630a-4235-a784-be70ef242f8d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "qg2BdiI2EvwD4u8s",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "118c7623-1b9e-409e-bab8-5bcc56a2c6ed",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5bc00bb52e5f974cc256d29a4c7adb15cbca593050efd952d642a155d28d68fa"
+  },
+  "nodeGroups": [],
+  "id": "kImQQSJSIDM93STI",
+  "tags": []
+}
