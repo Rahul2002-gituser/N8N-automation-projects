@@ -1,0 +1,776 @@
+{
+  "name": "Leads classification workflows",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-classification",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1664,
+        448
+      ],
+      "id": "4bf38e4a-7c86-4f11-8238-64881720712f",
+      "name": "Webhook",
+      "webhookId": "6ea9884f-0ca8-4b30-84ee-118e44bb15a6"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "15243a83-50c2-4fac-90a1-382773c48807",
+              "leftValue": "={{ $json.budget }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1344,
+        416
+      ],
+      "id": "cde47036-fffb-4170-a571-9b93d934500f",
+      "name": "Validate lead"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e83b8b67-8d65-4430-baca-18f9f76943db",
+              "leftValue": "={{ $json.body.budget }}",
+              "rightValue": 10000,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "1806a502-7ca1-42bd-adc6-311f79f2bfb8",
+              "leftValue": "={{ $json.body.budget }}",
+              "rightValue": 50000,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -800,
+        112
+      ],
+      "id": "cede2617-b8d1-4283-9079-7a094c460d0b",
+      "name": "Hot lead"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e1dbdd54-c0ed-4251-a2b4-23c2fe4d1a3e",
+              "leftValue": "Budget >= 10000",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "d7fd98a2-703a-4444-b19e-9e67076caff1",
+              "leftValue": "Budget <= 50000",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -768,
+        672
+      ],
+      "id": "2edd8274-fe3a-49a9-bc75-bc9be4d497b5",
+      "name": "Warm lead"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a125f36a-4912-4b4d-ba0d-5e4bd2c62fbe",
+              "name": "Category",
+              "value": "Hot",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        16,
+        -176
+      ],
+      "id": "311d367c-ad29-4aa7-a72d-267930b3e3a8",
+      "name": "Set hot"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "519a67fa-303b-4706-af5b-e56d467a80ec",
+              "name": "Category",
+              "value": "Warm",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        0,
+        48
+      ],
+      "id": "1303e94a-e415-4fbb-8e58-c24ba57d107d",
+      "name": "Set warm"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/18pT01wfiGok1RFx_VhkQ14LIFsshR6UgncxCBNaQYDw/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18pT01wfiGok1RFx_VhkQ14LIFsshR6UgncxCBNaQYDw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name ": "={{ $json.body.name }}",
+            "Email": "={{ $json.body.email }}",
+            "Phone no": "={{ $json.body.phone }}",
+            "Budget": "={{ $json.body.budge }}",
+            "Category": "Hot",
+            "Notes": "={{ $json.body.notes }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone no",
+              "displayName": "Phone no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        -96
+      ],
+      "id": "751dc62e-fa80-472b-bfd3-dc27b137683d",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zmh6KVJCYGoFEvWV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/18pT01wfiGok1RFx_VhkQ14LIFsshR6UgncxCBNaQYDw/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18pT01wfiGok1RFx_VhkQ14LIFsshR6UgncxCBNaQYDw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name ": "={{ $json.body.name }}",
+            "Email": "={{ $json.body.email }}",
+            "Phone no": "={{ $json.body.phone  }}",
+            "Budget": "={{ $json.body.budge }}",
+            "Notes": "={{ $json.body.notes }}",
+            "Category": "Warm"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone no",
+              "displayName": "Phone no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        128
+      ],
+      "id": "c81e82cd-df2b-4687-829a-017994f11212",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zmh6KVJCYGoFEvWV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "785d90f8-e4d6-47cc-8459-d166d14d7657",
+              "name": "Category",
+              "value": "code",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        80,
+        624
+      ],
+      "id": "b208d66d-f467-4531-841f-8bdee0ae9913",
+      "name": "Set cold 1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/18pT01wfiGok1RFx_VhkQ14LIFsshR6UgncxCBNaQYDw/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18pT01wfiGok1RFx_VhkQ14LIFsshR6UgncxCBNaQYDw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name ": "={{ $json.body.name }}",
+            "Email": "={{ $json.body.email }}",
+            "Phone no": "={{ $json.body.phone }}",
+            "Budget": "={{ $json.body.budget }}",
+            "Notes": "={{ $json.body.notes }}",
+            "Category": "Cold"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone no",
+              "displayName": "Phone no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        624
+      ],
+      "id": "b6509607-0bec-415f-a58f-b8b79873871f",
+      "name": "Append row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zmh6KVJCYGoFEvWV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "22924f4b-19c5-43b9-806f-6bbde4ea376b",
+              "name": "Category",
+              "value": "Cold",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        16,
+        352
+      ],
+      "id": "eddc9b58-d5d7-408e-bd28-4f647665ec12",
+      "name": "Set cold 2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/18pT01wfiGok1RFx_VhkQ14LIFsshR6UgncxCBNaQYDw/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18pT01wfiGok1RFx_VhkQ14LIFsshR6UgncxCBNaQYDw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name ": "={{ $json.body.name }}",
+            "Email": "={{ $json.body.email }}",
+            "Phone no": "={{ $json.body.phone }}",
+            "Budget": "={{ $json.body.budget }}",
+            "Notes": "={{ $json.body.notes }}",
+            "Category": "Cold"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone no",
+              "displayName": "Phone no",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        368
+      ],
+      "id": "c41ec9c3-4ec7-4a1f-906d-26895cd14a2b",
+      "name": "Append row in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zmh6KVJCYGoFEvWV",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate lead": {
+      "main": [
+        [
+          {
+            "node": "Hot lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Hot lead",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set cold 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hot lead": {
+      "main": [
+        [
+          {
+            "node": "Set hot",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Warm lead",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set warm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Warm lead": {
+      "main": [
+        [
+          {
+            "node": "Set warm",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set cold 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set hot": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set warm": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set cold 1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set cold 2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9b63ebb7-2bfa-4f0e-b74c-c6f225bed6c7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5bc00bb52e5f974cc256d29a4c7adb15cbca593050efd952d642a155d28d68fa"
+  },
+  "nodeGroups": [],
+  "id": "lFuG5TXIJSTXY2YP",
+  "tags": []
+}
