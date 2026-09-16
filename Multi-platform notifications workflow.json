@@ -1,0 +1,133 @@
+{
+  "name": "Multi-platform notifications workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Multi-platform-notifications",
+        "options": {}
+      },
+      "id": "59a9ce21-bbdd-4e59-bb31-d3c2b13aa719",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1184,
+        -32
+      ],
+      "webhookId": "2e78174f-1764-4e71-8cb3-c118be5f12a5"
+    },
+    {
+      "parameters": {
+        "sendTo": "rahulmano895@gmail.com",
+        "subject": "= Multi-Platform Notifications workflow using n8n",
+        "emailType": "text",
+        "message": "=NOTIFICATION ALERT  Subject: {{ $json.body.subject }}  Priority: {{ $json.body.priority }}  Message: {{ $json.body.message }}  Automated by n8n",
+        "options": {}
+      },
+      "id": "041fc783-5c6c-41b0-81c4-447df2b6166d",
+      "name": "Send a message",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -624,
+        160
+      ],
+      "webhookId": "0e9e305a-71f5-4487-91e2-2773fa3f0f39",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hZN7BDZ0xepPuBfx",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0C228YEBGB",
+          "mode": "id",
+          "cachedResultName": "all-ai-automation-hub"
+        },
+        "text": "=🔔 NOTIFICATION  📌 Subject: {{ $json.body.subject }}  🚨 Priority: {{ $json.body.priority }}  📝 Message: {{ $json.body.message }}  🤖 Automated by n8n",
+        "otherOptions": {}
+      },
+      "id": "ad0847e1-3888-44c2-a517-cc32ac7f2a63",
+      "name": "Send a message1",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        -592,
+        -160
+      ],
+      "webhookId": "d99f0013-371c-4bf9-ae39-619ff473873b",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "cHqvMk2oT0zDAIwu",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1775366656",
+        "text": "=🔔 MULTI-PLATFORM NOTIFICATION  Subject: {{ $json.body.subject }}  {{ $json.body.message }}  📌 Priority: {{ $json.body.priority }}  🤖 Automated by n8n",
+        "additionalFields": {}
+      },
+      "id": "be16fa00-6d4b-43be-8d1b-2a4c71ef916a",
+      "name": "Send a text message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -352,
+        0
+      ],
+      "webhookId": "e4a47b8a-000e-4046-93fc-f39269bcc824",
+      "credentials": {
+        "telegramApi": {
+          "id": "MFk9fjEEVTktU8KC",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c04a622d-cfc6-4700-a76e-7c0bb564bfcd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7914842c4d945d22492711a048a1ac82b565f5570f797a5222288d11b0f16487"
+  },
+  "nodeGroups": [],
+  "id": "Koql8ScJDYukvpnB",
+  "tags": []
+}
